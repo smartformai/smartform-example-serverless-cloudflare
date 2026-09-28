@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SmartForm → Cloudflare Worker</title>
+  <style>
+    body { font: 16px/1.4 system-ui; max-width: 480px; margin: 40px auto; padding: 0 16px; }
+    form { display: grid; gap: 12px; }
+    input, textarea, button { font: inherit; padding: 8px 10px; }
+    textarea { min-height: 100px; }
+    button { background: #7c3aed; color: #fff; border: 0; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Contact us</h1>
+  <form id="contact">
+    <input name="name"  placeholder="Name"  required />
+    <input name="email" type="email" placeholder="Email" required />
+    <textarea name="message" placeholder="Message" required></textarea>
+    <input type="text" name="_gotcha" tabindex="-1" autocomplete="off"
+           style="position:absolute;left:-9999px" aria-hidden="true" />
+    <button type="submit">Send</button>
+    <p id="status"></p>
+  </form>
+  <script>
+    const WORKER = 'https://your-worker.workers.dev';
+    document.getElementById('contact').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.currentTarget));
+      const r = await fetch(`${WORKER}/submit`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(data),
+      });
+      const body = await r.json();
+      document.getElementById('status').textContent =
+        `submission_id=${body.submission_id} intent=${body.intent}`;
+    });
+  </script>
+</body>
+</html>

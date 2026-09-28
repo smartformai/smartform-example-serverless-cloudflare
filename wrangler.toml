@@ -1,0 +1,7 @@
+name        = "smartform-proxy"
+main        = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+[vars]
+SMARTFORM_ENDPOINT = "https://api.usesmartform.com"
+# SMARTFORM_FORM_ID is set via `wrangler secret put`, not committed.
