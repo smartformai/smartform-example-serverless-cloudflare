@@ -3,6 +3,29 @@
 A Cloudflare Worker that receives browser submissions and forwards them to SmartForm AI.
 Use this instead of the Vercel Function when you want to host everything on Cloudflare.
 
+## What you're POSTing
+
+The endpoint accepts a standard HTML form POST or JSON via AJAX. Two
+kinds of fields:
+
+**Your form fields** — `name`, `email`, `message`, whatever you
+want. Every non-reserved field lands in your dashboard as a column in
+the submissions table.
+
+**Reserved fields** — names starting with `_` are interpreted by
+the API, not stored:
+
+| Field | Purpose |
+|---|---|
+| ``_gotcha`` | **Honeypot.** Keep it empty. Hidden from humans via CSS; bots fill it automatically. Any non-empty value silently drops the submission. Add this to every form. |
+| ``_hp_email`` / ``_website`` / ``_url`` / ``_phone`` | Honeypot aliases for `_gotcha` (WordPress / WPForms / Contact Form 7 migrations). Same drop semantics. |
+| ``_next`` | Same-origin URL to redirect to after a successful submission. Browser POST results in a 302 here. AJAX calls (with `Accept: application/json`) get the same value back as `next_url` in the JSON response. Only http(s) and in-site paths allowed. |
+| ``_subject`` | Override the AI-generated email subject line. Max 200 chars; control characters stripped. |
+| `X-Gotcha` header | Same as `_gotcha` for JSON requests where you can't add a hidden form field. |
+
+Field names are Formspree-compatible — migrating from
+`formspree.io/f/{form_id}` requires no renaming.
+
 ## Setup
 
 1. Get a form ID at https://usesmartform.com/dashboard.
@@ -63,20 +86,32 @@ renders the response inline.
 - Response: `{ success, message, submission_id, is_spam, intent, next_url }`.
 
 For the full contract, see https://usesmartform.com/docs.
-## Related examples
-[Vercel Functions proxy](https://github.com/yanghuai123456/smartform-example-serverless-vercel) | [Cloudflare Pages contact form](https://github.com/yanghuai123456/smartform-example-cloudflare-react) | [Astro contact form](https://github.com/yanghuai123456/smartform-example-astro)
 
 
 ## FAQ
 
 ### Why use this instead of Formspree?
 
-Both SmartForm and Formspree let you POST a plain HTML form to a hosted
-endpoint with no backend. SmartForm adds an AI spam filter (not just
-honeypots), AI intent classification (`sales` / `support` / `inquiry`)
-and high-value lead detection, with a free tier that includes the spam
-filter. Formspree charges per submission; SmartForm's spam filter is
-free on every plan.
+At the basic level, SmartForm and Formspree are very similar: get a
+form ID, POST a plain HTML form to a hosted endpoint with `_gotcha`
+for spam filtering, and the API delivers the submission. The reserved
+fields (`_gotcha`, `_next`, `_subject`, honeypot aliases) are
+Formspree-compatible — a migration does not require renaming
+anything.
+
+The differences are operational, not API surface:
+
+- **No email confirmation flow.** Formspree requires verifying your
+  domain before submissions reach your inbox; SmartForm submissions
+  land in your dashboard immediately.
+- **AI spam filtering on the free tier.** Formspree's free tier uses
+  only a honeypot field, which catches naive bots but lets semantic
+  spam through. SmartForm applies AI-based classification by default,
+  free of charge.
+- **AI intent classification** (`sales` / `support` / `inquiry`
+  / `spam`) on the Pro tier, for routing submissions without writing
+  rules yourself.
+- **No per-submission metering** on the basic plan.
 
 ### Is there a free tier?
 
