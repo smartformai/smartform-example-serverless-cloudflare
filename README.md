@@ -1,4 +1,4 @@
-# SmartForm → Cloudflare Worker Proxy
+# Cloudflare Workers contact form proxy — Formspree alternative with AI spam filtering
 
 A Cloudflare Worker that receives browser submissions and forwards them to SmartForm AI.
 Use this instead of the Vercel Function when you want to host everything on Cloudflare.
