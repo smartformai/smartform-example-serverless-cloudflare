@@ -1,4 +1,4 @@
-# Cloudflare Workers contact form proxy â€” Formspree alternative with AI spam filtering
+# Cloudflare Workers contact form proxy â€?Formspree alternative with AI spam filtering
 
 A Cloudflare Worker that receives browser submissions and forwards them to SmartForm AI.
 Use this instead of the Vercel Function when you want to host everything on Cloudflare.
@@ -8,11 +8,11 @@ Use this instead of the Vercel Function when you want to host everything on Clou
 The endpoint accepts a standard HTML form POST or JSON via AJAX. Two
 kinds of fields:
 
-**Your form fields** â€” `name`, `email`, `message`, whatever you
+**Your form fields** â€?`name`, `email`, `message`, whatever you
 want. Every non-reserved field lands in your dashboard as a column in
 the submissions table.
 
-**Reserved fields** â€” names starting with `_` are interpreted by
+**Reserved fields** â€?names starting with `_` are interpreted by
 the API, not stored:
 
 | Field | Purpose |
@@ -23,7 +23,7 @@ the API, not stored:
 | ``_subject`` | Override the AI-generated email subject line. Max 200 chars; control characters stripped. |
 | `X-Gotcha` header | Same as `_gotcha` for JSON requests where you can't add a hidden form field. |
 
-Field names are Formspree-compatible â€” migrating from
+Field names are Formspree-compatible â€?migrating from
 `formspree.io/f/{form_id}` requires no renaming.
 
 ## Setup
@@ -31,11 +31,11 @@ Field names are Formspree-compatible â€” migrating from
 1. Get a form ID at https://usesmartform.com/dashboard.
 2. Configure secrets:
    ```bash
-   git clone https://github.com/yanghuai123456/smartform-example-serverless-cloudflare.git
+   git clone https://github.com/smartformai/smartform-example-serverless-cloudflare.git
    cd smartform-example-serverless-cloudflare
-   wrangler kv:namespace create SESSIONS   # optional â€” only if you add rate-limit caching
+   wrangler kv:namespace create SESSIONS   # optional â€?only if you add rate-limit caching
    npx wrangler secret put SMARTFORM_ENDPOINT     # https://api.usesmartform.com
-   npx wrangler secret put SMARTFORM_FORM_ID      # f_your_real_id
+   npx wrangler secret put SMARTFORM_FORM_ID      # your_real_id
    npx wrangler deploy
    ```
 3. Browser calls `POST https://your-worker.workers.dev/submit`. The Worker forwards to
@@ -82,7 +82,7 @@ renders the response inline.
 
 ## How the SmartForm API works
 
-- `POST {endpoint}/api/v1/f/{form_id}` â€” JSON or form-data, no API key.
+- `POST {endpoint}/api/v1/f/{form_id}` â€?JSON or form-data, no API key.
 - Response: `{ success, message, submission_id, is_spam, intent, next_url }`.
 
 For the full contract, see https://usesmartform.com/docs.
@@ -94,7 +94,7 @@ For the full contract, see https://usesmartform.com/docs.
 
 Yes. AI spam filtering is enabled by default on every plan. AI intent
 classification and high-value lead detection require a paid plan (Pro
-or Business) â€” the dashboard enforces this and returns HTTP 402 if
+or Business) â€?the dashboard enforces this and returns HTTP 402 if
 you try to enable them on a free workspace.
 
 ### Do I need an API key?
@@ -104,10 +104,10 @@ form ID, which is non-enumerable. The example also includes a hidden
 `_gotcha` honeypot field so naive bots cannot submit.
 
 ### Why use a Worker?
-The Worker hides the form ID and lets you add KV-based rate limiting in front of the public endpoint. Pure edge â€” no cold starts.
+The Worker hides the form ID and lets you add KV-based rate limiting in front of the public endpoint. Pure edge â€?no cold starts.
 
 ## Related examples
-[Vercel Functions proxy](https://github.com/yanghuai123456/smartform-example-serverless-vercel) | [Cloudflare Pages contact form](https://github.com/yanghuai123456/smartform-example-cloudflare-react) | [Astro contact form](https://github.com/yanghuai123456/smartform-example-astro)
+[Vercel Functions proxy](https://github.com/smartformai/smartform-example-serverless-vercel) | [Cloudflare Pages contact form](https://github.com/smartformai/smartform-example-cloudflare-react) | [Astro contact form](https://github.com/smartformai/smartform-example-astro)
 
 
 ## License
